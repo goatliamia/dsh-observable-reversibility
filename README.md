@@ -7,6 +7,10 @@
 背景论文：*A Programming Paradigm for Spatiotemporal Composability*（arXiv:2608.25512v1）。
 形式化在 `Reversibility/`，逐条对应关系与逐字引文见 [CORRESPONDENCE.md](CORRESPONDENCE.md)。
 
+它接在 **DSH / Cordis** 那条线上：插件在运行时被装载与卸载，而「卸载之后环境回没回来」今天
+只是作者的义务 —— 运行时不核对，差异也没有名字。给插件作者的那条义务写在
+[skill/plugin-teardown-obligation/SKILL.md](skill/plugin-teardown-obligation/SKILL.md)。
+
 ## 一、定理（一般形式）
 
 状态空间 `S`、观察 `q : S → O`、装载 `L : S → S`、卸载 `U : S → S`。
