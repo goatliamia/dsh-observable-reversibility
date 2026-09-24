@@ -105,6 +105,7 @@ Lean：`Reversibility.roundTrip_iff_leftInverseOnRange_comp`（[Statements.lean]
 | [Reversibility/Finite.lean](Reversibility/Finite.lean) | 精确有限例：目标只区分「服务/文件」时，充分观察面的最低成本是 2 |
 | [Reversibility/BasicExamples.lean](Reversibility/BasicExamples.lean) | 三态判决的正反试件 |
 | [Reversibility/StructureExamples.lean](Reversibility/StructureExamples.lean) | 反例：同顺序卸载失败、幂等但不扩张、可达之外不成立 |
+| [skill/plugin-teardown-obligation/SKILL.md](skill/plugin-teardown-obligation/SKILL.md) | 给插件作者的那条义务：机制内的归 `ctx.effect`，机制外的必须具名 |
 | [CORRESPONDENCE.md](CORRESPONDENCE.md) | 记号与论文的逐条对应（哪一栏机器核、哪一栏要人读） |
 | [PROVENANCE.md](PROVENANCE.md) | 这批源码从哪来、做过哪两步机械改动 |
 | [BUILD.md](BUILD.md) | 构建记录：命令、固定版本、被构建的字节 |
