@@ -122,6 +122,8 @@ Lean：`Reversibility.roundTrip_iff_leftInverseOnRange_comp`（[Statements.lean]
 
 ## 运行时那半：一台能跑的检查机
 
+机器本体：**`runtime-check.py`**（一个文件、无依赖）——`python runtime-check.py --demo` 就能看到三种结果；这次的运行记录在 `receipts/dsh-plugins-2026-09-26.json`。
+
 这个仓给的是**判据**（上面的定理）。判据要能落地，还需要有人**在插件系统管不到的地方看着**——下面这台机器就是那半，已经跑了真实数据。
 
 **它做什么（人话）**：先说清"要看哪些东西"（哪些目录/文件、哪些登记项），然后装一次、看三次（装之前 / 装完 / 卸完），做**三次对照**：
