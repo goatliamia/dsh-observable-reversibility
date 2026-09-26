@@ -1,0 +1,38 @@
+{
+  "note": "真账（补了集合之后）过一遍判决器",
+  "judged": [
+    {
+      "插件": "downstream/plugins/invariance/index.js",
+      "result": "clean",
+      "why": "三次对照全过，没留下东西",
+      "left": [],
+      "checks": {
+        "加了什么 vs 说加了什么": true,
+        "删了什么 vs 说删了什么": true,
+        "装前 vs 卸后": true
+      }
+    },
+    {
+      "插件": "downstream/plugins/assets/index.js",
+      "result": "clean",
+      "why": "三次对照全过，没留下东西",
+      "left": [],
+      "checks": {
+        "加了什么 vs 说加了什么": true,
+        "删了什么 vs 说删了什么": true,
+        "装前 vs 卸后": true
+      }
+    },
+    {
+      "插件": "downstream/lifecycle/fixtures/multi-dep.mjs",
+      "result": "clean",
+      "why": "三次对照全过，没留下东西",
+      "left": [],
+      "checks": {
+        "加了什么 vs 说加了什么": true,
+        "删了什么 vs 说删了什么": true,
+        "装前 vs 卸后": true
+      }
+    }
+  ]
+}
