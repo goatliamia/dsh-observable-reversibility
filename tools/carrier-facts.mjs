@@ -17,6 +17,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
+// Default install locations for the bundled runtime on Windows, macOS and Linux.
+// Nothing here is machine-specific: edit the list if your installation lives elsewhere.
 const HOME = os.homedir();
 const json = process.argv.includes('--json');
 
