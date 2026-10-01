@@ -7,6 +7,16 @@
 背景论文：*A Programming Paradigm for Spatiotemporal Composability*（arXiv:2608.25512v1）。
 形式化在 `Reversibility/`，逐条对应关系与逐字引文见 [CORRESPONDENCE.md](CORRESPONDENCE.md)。
 
+这个仓库现在有四条线，**都带能跑的东西**：
+
+| 线 | 在哪 | 一句话 |
+|---|---|---|
+| 判据 | `Reversibility/` + [runtime-check.py](runtime-check.py) | 卸载可逆性：从**义务**变成**判决** |
+| 提案 | [proposals/agent-knows-its-carrier.md](proposals/agent-knows-its-carrier.md) | 会话的环境说明要与它实际运行的应用一致 |
+| 问题 | [PROBLEMS.md](PROBLEMS.md) | 每条候选：owner / 生效路径 / 消失什么 / 剩下什么 / 保留理由 |
+| 覆盖 | [COVER.md](COVER.md) | 最少改哪几处覆盖哪些后果；并列全报 |
+| 工具 | [tools/carrier-facts.mjs](tools/carrier-facts.mjs) | 一条命令打印这个会话的环境事实 |
+
 它接在 **DSH / Cordis** 那条线上：插件在运行时被装载与卸载，而「卸载之后环境回没回来」今天
 只是作者的义务 —— 运行时不核对，差异也没有名字。给插件作者的那条义务写在
 [skill/plugin-teardown-obligation/SKILL.md](skill/plugin-teardown-obligation/SKILL.md)。
@@ -127,6 +137,30 @@ Lean：`Reversibility.roundTrip_iff_leftInverseOnRange_comp`（[Statements.lean]
 | [Reversibility/StructureExamples.lean](Reversibility/StructureExamples.lean) | 反例：同顺序卸载失败、幂等但不扩张、可达之外不成立 |
 | [skill/plugin-teardown-obligation/SKILL.md](skill/plugin-teardown-obligation/SKILL.md) | 给插件作者的那条义务：机制内的归 `ctx.effect`，机制外的必须具名 |
 | [CORRESPONDENCE.md](CORRESPONDENCE.md) | 记号与论文的逐条对应（哪一栏机器核、哪一栏要人读） |
+
+## 七、另一条线：会话的环境事实
+
+起因是一次实测。会话的"环境说明"由 **web 应用那层**生成（`packages/bundle/web-app/src/index.ts` 的
+`webSurfacePrompt()`），而桌面端加载的正是同一个 bundle —— 于是它说"你在 Web GUI 里"，而实际承载
+会话的是 Electron 桌面应用；那段 web 专属约定（HMR / `pnpm run dev:web` / `__DSH_BOOT__`）在桌面端
+也不成立。**这段文字有生产者，没有值**：那个文件里 `profile` / `desktop` / `Electron` 出现 0 次。
+
+本机实测（2026-10-01）：profile `desktop`；承载者 `DeepSeek Harness.exe`（`ELECTRON_RUN_AS_NODE=1`）；
+`GET http://127.0.0.1:19387/` → **401**；当前 profile 里活的插件只有 `dsh-base` 与 `dsh-web-app`；
+机器上另一份运行时是 npm 的 `0.1.7-rc.2`，另有 15 个别的 profile。
+
+- 提案：[proposals/agent-knows-its-carrier.md](proposals/agent-knows-its-carrier.md) —— 按
+  `Problem / Proposal / Alternatives considered / Acceptance criteria / Risks` 组织；含一张
+  "每项事实放前缀还是走查询"的判定表，只有两行留给官方定；
+- 问题登记：[PROBLEMS.md](PROBLEMS.md) —— 每条候选按 owner、生效路径、消失什么、剩下什么、
+  最强的保留理由记录，并标成 R（不可达）/ N（收窄并写明损失）/ P（受保护义务或证据不足）；
+- 覆盖：[COVER.md](COVER.md) —— 最少改哪几处、每处覆盖哪些后果、并列全报，以及"只接受其中几条时
+  还剩什么没被覆盖"；
+- 可跑的工具：[tools/carrier-facts.mjs](tools/carrier-facts.mjs)（`node tools/carrier-facts.mjs`）、
+  本仓 `core/runtime-census/preflight.mjs`（可达性诊断：这个组合能不能激活这个插件）。
+
+**这条线与可逆性那条同源**：都是"描述与事实不一致、而且没人核对"。区别只在消费者——那边是插件作者，
+这边是会话里的 agent。
 | [PROVENANCE.md](PROVENANCE.md) | 这批源码从哪来、做过哪两步机械改动 |
 | [BUILD.md](BUILD.md) | 构建记录：命令、固定版本、被构建的字节 |
 | [LICENSE](LICENSE) | MIT |
