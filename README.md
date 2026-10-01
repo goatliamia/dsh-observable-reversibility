@@ -1,4 +1,6 @@
-# 观察面相对的可逆性：判决，而不是义务
+# 两条核对线：卸载可逆性，与会话的环境事实
+
+> 这条线原来的名字是「观察面相对的可逆性：判决，而不是义务」——定理与判决那部分一字未改，见下面第一条线。
 
 **一句话**：把「卸载之后世界回得来」从**组件作者的义务**变成**被核对的判决**，
 并说清楚这个判决在什么条件下等于「在观察商空间上恒等」。
@@ -6,6 +8,10 @@
 
 背景论文：*A Programming Paradigm for Spatiotemporal Composability*（arXiv:2608.25512v1）。
 形式化在 `Reversibility/`，逐条对应关系与逐字引文见 [CORRESPONDENCE.md](CORRESPONDENCE.md)。
+
+它接在 **DSH / Cordis** 那条线上：插件在运行时被装载与卸载，而「卸载之后环境回没回来」今天
+只是作者的义务 —— 运行时不核对，差异也没有名字。给插件作者的那条义务写在
+[skill/plugin-teardown-obligation/SKILL.md](skill/plugin-teardown-obligation/SKILL.md)。
 
 这个仓库现在有四条线，**都带能跑的东西**：
 
@@ -17,11 +23,9 @@
 | 覆盖 | [COVER.md](COVER.md) | 最少改哪几处覆盖哪些后果；并列全报 |
 | 工具 | [tools/carrier-facts.mjs](tools/carrier-facts.mjs) | 一条命令打印这个会话的环境事实 |
 
-它接在 **DSH / Cordis** 那条线上：插件在运行时被装载与卸载，而「卸载之后环境回没回来」今天
-只是作者的义务 —— 运行时不核对，差异也没有名字。给插件作者的那条义务写在
-[skill/plugin-teardown-obligation/SKILL.md](skill/plugin-teardown-obligation/SKILL.md)。
+## 第一条线：卸载可逆性 —— 判决，而不是义务
 
-## 一、定理（一般形式）
+### 一、定理（一般形式）
 
 状态空间 `S`、观察 `q : S → O`、装载 `L : S → S`、卸载 `U : S → S`。
 若存在观察层变换 `Lₒ, Uₒ : O → O` 使两个方块**交换**：
@@ -69,7 +73,7 @@ Lean：`Reversibility.roundTrip_iff_leftInverseOnRange_comp`（[Statements.lean]
 | 闭包 | 幂等**不是**闭包：还要声明的预序、`Monotone`、扩张性，才接上 `ClosureOperator`（closed ⟺ 在装载像里），再往上要 `PartialOrder` 才有 Galois insertion |
 | `q` 满射时 | `Lₒ`、`Uₒ` 由 `L`、`U` 唯一确定，「可达值域上的左逆」升级成普通的 `Function.LeftInverse` |
 
-## 二、判决：三态，三项独立核对
+### 二、判决：三态，三项独立核对
 
 不要求「全世界都可逆」，要求**不许静默**。每个组件卸载后给一个三态：
 
@@ -91,7 +95,7 @@ Lean：`Reversibility.roundTrip_iff_leftInverseOnRange_comp`（[Statements.lean]
 判据与边界的试件在 [BasicExamples.lean](Reversibility/BasicExamples.lean)（三态的正反例，
 含「观察上回得来、物理状态没回来」那一格）。
 
-## 三、为什么可以这样判
+### 三、为什么可以这样判
 
 三项核对逐状态全过，合起来就是 `U ∘ L` 在 `S / ~q` 上**逐点恒等**
 （`audited_composition_is_quotient_identity`）；配上两个交换方块，就等价于
@@ -99,7 +103,7 @@ Lean：`Reversibility.roundTrip_iff_leftInverseOnRange_comp`（[Statements.lean]
 
 方向也有用：它把**状态空间上的全称**换成**观察值域上的全称** —— 后者才是有限次观察能核掉的东西。
 
-## 四、范围
+### 四、范围
 
 证明的是**编码进去的语句与前提**：观察商上的往返刻画（主定理与推论），
 以及三态判决的可靠性 —— `verified-reversible` 只能从三项核对里来。
@@ -117,7 +121,7 @@ Lean：`Reversibility.roundTrip_iff_leftInverseOnRange_comp`（[Statements.lean]
   要作这类声明，得扩大观察签名，或给出连续日志的正确性证明。
 - `declared-irreversible` 是具名披露，`unknown` 是没观察：两者都不含「不可逆」的证明。
 
-## 五、怎么建
+### 五、怎么建
 
     lake exe cache get      # 第一次：取 Mathlib 编译缓存（约 GB 级）
     lake build
@@ -125,7 +129,7 @@ Lean：`Reversibility.roundTrip_iff_leftInverseOnRange_comp`（[Statements.lean]
 固定版本：`leanprover/lean4:v4.34.0` + `mathlib` `v4.34.0`（manifest 里是 `5ed2965…`）。
 最近一次构建的命令、输出与源码哈希见 [BUILD.md](BUILD.md)。
 
-## 六、文件
+### 六、文件
 
 | 路径 | 是什么 |
 |---|---|
@@ -138,7 +142,7 @@ Lean：`Reversibility.roundTrip_iff_leftInverseOnRange_comp`（[Statements.lean]
 | [skill/plugin-teardown-obligation/SKILL.md](skill/plugin-teardown-obligation/SKILL.md) | 给插件作者的那条义务：机制内的归 `ctx.effect`，机制外的必须具名 |
 | [CORRESPONDENCE.md](CORRESPONDENCE.md) | 记号与论文的逐条对应（哪一栏机器核、哪一栏要人读） |
 
-## 七、另一条线：会话的环境事实
+## 第二条线：会话的环境事实
 
 起因是一次实测。会话的"环境说明"由 **web 应用那层**生成（`packages/bundle/web-app/src/index.ts` 的
 `webSurfacePrompt()`），而桌面端加载的正是同一个 bundle —— 于是它说"你在 Web GUI 里"，而实际承载
