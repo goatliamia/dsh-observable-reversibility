@@ -27,18 +27,30 @@ Measured on the machine this was written on: profile `desktop`, carrier `DeepSee
 3. On a non-web carrier, do **not** inject the web-only contract (HMR / `dev:web` /
    "rebuild Web artifacts" / `__DSH_BOOT__`); replace it with that carrier's own statement.
 
-Always-on options (explicit trade-off, for the team to choose):
+Always-on content is a **placement decision**, not a risk to be mitigated: every candidate fact is
+classified by whether its value can be the same for every step of a session. Nothing below needs
+a new mechanism — only the choice of where each field lives.
 
-| Option | Prompt content | Gain | Cost |
+| Fact | Stability | Where | Basis for the judgement |
 |---|---|---|---|
-| Smallest | one path or command: "environment facts: `<command>`" | near-zero, never stale | the agent must run it once to be right |
-| Minimal fields (suggested) | that line **+ two short fields**: carrying application, profile name | makes "where am I" correct at step one | one extra sentence per step |
-| More | add UI address and access requirement (e.g. "authenticated; direct fetch 401") | saves one probe | changes with port/configuration |
+| carrying application (`desktop` / `web` / CLI) | constant for a session, and per carrier | **prefix** | set once at launch; identical for every session of that carrier |
+| profile name | constant for a session | **prefix** | read from `DSH_PROFILE` at launch |
+| the command that reads the rest | constant | **prefix** | it is a name, not a value |
+| UI address and port | same value for a whole run, may differ across runs and configurations | **TBD** | measured stable within this run (19387); whether a different port is an acceptable different prefix is the team's call |
+| whether the UI requires authentication | follows the carrier | **TBD** | constant per carrier in practice, not guaranteed by contract |
+| live plugins in this profile | changes when a plugin is installed or removed | query | measured: 2 here, 37 in the other profile |
+| other runtimes / profiles on the machine | changes; 15 profiles here, many of them experiments | query | length and churn |
+| application version | changes on every update (nightly feed) | query | a prefix containing it breaks on each update |
 
-On-demand facts (never in the prompt): live plugins in this profile; other dsh runtimes and
-profiles on the machine. Both are long and change; expose them through a query shaped like the
-existing progressive Inspect directories — a compact list first, one entry on request.
-`tools/carrier-facts.mjs` in this repository prints them today, as a stopgap.
+Two rules the table encodes:
+
+- a fact may enter the prefix **only if its value is the same for every step of a session**;
+- a fact whose value is merely *usually* the same goes in the **TBD** column — decided by the
+  team, not assumed. (The two TBD rows are the only open questions in this proposal.)
+
+On-demand facts are exposed through a query shaped like the existing progressive Inspect
+directories — a compact list first, one entry on request. `tools/carrier-facts.mjs` in this
+repository prints them today, as a stopgap.
 
 ## Alternatives considered
 
@@ -63,9 +75,11 @@ existing progressive Inspect directories — a compact list first, one entry on 
 
 ## Risks
 
-- **Prompt cache cost.** Injecting volatile values (URL, port, auth state) can invalidate the
-  cached prefix every step. Mitigation: keep the always-on section to fields that do not change
-  within a session; leave the rest on demand.
+- **Prompt cache cost is settled by the placement table above**, not by a separate mitigation:
+  only facts whose value is constant for a session enter the prefix, so the block is
+  byte-identical from the second step onward, and the same prefix is reusable across sessions of
+  the same (carrier, profile) pair. Check: assemble the block twice in one session and require an
+  empty diff, rejecting the block if it contains a port-like digit run or a timestamp.
 - **Stale values.** Facts captured at boot can go stale if the profile changes mid-session.
   Mitigation: the on-demand query is authoritative; the always-on line points at it.
 - **Scope creep.** This proposal does not touch plugin activation, per-profile settings, or the
@@ -94,9 +108,12 @@ bundles = `dsh-base` + `dsh-web-app`）。该文件里 `profile` / `desktop` / `
 
 ## Proposal
 
-1. 增加一节**由宿主提供**的载体事实。READM 的 Transport 决策已写明 *"the Host supplies boot
+1. 增加一节**由宿主提供**的载体事实。README 的 Transport 决策已写明 *"the Host supplies boot
    injections"*，位置是现成的。
-2. 常驻内容三选一（见上表），**按需事实不进提示词**。
+2. **常驻内容是一道"放哪"的判定，不是要缓解的风险**——每一项候选事实，按"它在一个会话里能否
+   每步都一样"分类（见上表）。表里只需要判断，不需要新机制。编码成两条规矩：
+   - 只有**每一步值都一样**的事实才进前缀；
+   - 只是"通常一样"的进 **TBD** 列——**由官方定，不替他们假设**（整份提案只有这两行是待定）。
 3. 非 web 载体上**不要注入**那段 web 专属约定，换成该载体自己的说法。
 
 ## Alternatives considered
@@ -117,7 +134,8 @@ bundles = `dsh-base` + `dsh-web-app`）。该文件里 `profile` / `desktop` / `
 
 ## Risks
 
-- **提示词缓存代价**：易变值（地址、端口、认证状态）会让缓存前缀每轮失效。缓解：常驻只放会话内
-  不变的事实，其余按需；
+- **提示词缓存代价由上面那张判定表解决**，不再单列缓解：只有会话内恒定的事实进前缀，于是从第二步起
+  该块逐字节不变；同一个 (载体, profile) 组合的前缀还可以跨会话复用。可核：一个会话里装配两次，
+  要求 diff 为空；块内出现像端口的连续数字或时间戳就判不合规；
 - **值会过期**：启动时取的事实可能在会话中途失效。缓解：以按需查询为准，常驻那行只是入口；
 - **范围蔓延**：本提案不碰插件激活、按 profile 的设置、两套运行时的布局——那些是各自 owner 的决定。
