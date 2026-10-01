@@ -151,9 +151,24 @@ Lean：`Reversibility.roundTrip_iff_leftInverseOnRange_comp`（[Statements.lean]
   最强的保留理由记录，并标成 **R**（不可达）/ **N**（收窄，写明损失）/ **P**（受保护义务或证据不足）；
 - **覆盖**：[COVER.md](COVER.md) —— 最少改哪几处、每处覆盖哪些后果、并列全报，
   以及"只接受其中几条时还剩什么没被覆盖"；
-- **工具**：[tools/carrier-facts.mjs](tools/carrier-facts.mjs)（`node tools/carrier-facts.mjs`）；
-  本仓另有 `core/runtime-census/preflight.mjs`（**可达性诊断**：这个组合能不能激活这个插件）
-  与 `census.py`（按 profile 清点安装）。
+- **工具**（都在这个仓库里，clone 下来就能跑）：[tools/carrier-facts.mjs](tools/carrier-facts.mjs)、
+  [tools/preflight.mjs](tools/preflight.mjs)（**可达性诊断**：这个组合能不能激活这个插件）、
+  [tools/census.py](tools/census.py)（按 profile 清点安装）。用法见下一节。
+
+## 怎么用（拿到这个仓库之后）
+
+三件东西，互不依赖，按你想看的选：
+
+| 想干什么 | 需要什么 | 命令 |
+|---|---|---|
+| 看这台机器上装了什么、哪些插件在哪个 profile 里 | 一份装好的 DSH（Python 3） | `python tools/census.py --scan` 然后 `python tools/census.py --report` |
+| 问"这个组合能不能激活这个插件" | 上面那份 + 从会话里取一次可用服务清单 | `node tools/preflight.mjs --profile <名字> --services <清单.json>` |
+| 让 agent（或你）知道会话跑在哪个应用里 | 一份装好的 DSH（Node 18+） | `node tools/carrier-facts.mjs` |
+| 核一遍 Lean 那一半 | Lean 4 + Mathlib（见下一节） | `lake build` |
+
+`preflight.mjs` 的服务清单来自运行中的会话（官方 Inspect 的 `Service.listService`，把输出存成
+JSON 即可，脚本只读文件、不连运行时）。三个脚本都只读；唯一会写的是 `census.py --scan`，
+它写 `~/.dsh/runtime-census/<profile>.json`，**一个 profile 一个文件**。
 
 ## 六、怎么建
 
