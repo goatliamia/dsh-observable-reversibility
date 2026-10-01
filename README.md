@@ -139,6 +139,8 @@ Lean：`Reversibility.roundTrip_iff_leftInverseOnRange_comp`（[Statements.lean]
 ## 运行时那半：一台能跑的检查机
 
 另有一份相关提案（与可逆性无关，但同一个来处：会话的环境说明与实际运行环境不一致）：[`proposals/agent-knows-its-carrier.md`](proposals/agent-knows-its-carrier.md)，配套可跑命令 [`tools/carrier-facts.mjs`](tools/carrier-facts.mjs)。
+问题与覆盖的登记：[`PROBLEMS.md`](PROBLEMS.md)（每条候选按 owner / 生效路径 / 消失什么 / 剩下什么 / 保留理由记录）与 [`COVER.md`](COVER.md)（最少改哪几处覆盖哪些后果，并列全报）。
+
 
 机器本体：**`runtime-check.py`**（一个文件、无依赖）——`python runtime-check.py --demo` 就能看到三种结果；这次的运行记录在 `receipts/dsh-plugins-2026-09-26.json`。
 
